@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use Illuminate\Support\Carbon;
 
 class ItemController extends Controller
 {
@@ -30,8 +31,8 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return Item
      */
     public function store(Request $request)
     {
@@ -45,7 +46,7 @@ class ItemController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -56,7 +57,7 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -67,19 +68,28 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        //
+        $existingItem = Item::find($id);
+
+        if ($existingItem){
+            $existingItem->completed = $request->item['completed'] ? true : false;
+            $existingItem->completed_at = $request->item['completed'] ? Carbon::now() : null;
+            $existingItem->save();
+            return $existingItem;
+        }
+
+        return "Item not found.";
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
